@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inkloom — พิมพ์เอกสารในเบราว์เซอร์</title>
+  <meta name="description" content="โปรแกรมพิมพ์เอกสารในเบราว์เซอร์ เปิด แก้ไข บันทึก .docx ส่งออก PDF นับคำภาษาไทย — ไฟล์ไม่ถูกอัปโหลด">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+Thai:wght@400;700&family=Noto+Serif+Thai:wght@400;700&family=Mitr:wght@400;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="brand">
+      <img src="assets/logo.svg" alt="" width="28" height="28">
+      <strong>Inkloom</strong>
+      <label for="docname" class="vh">ชื่อเอกสาร</label>
+      <input id="docname" class="docname" value="เอกสารใหม่" spellcheck="false">
+    </div>
+    <div class="filebtns" role="toolbar" aria-label="ไฟล์">
+      <button type="button" id="f-new">ใหม่</button>
+      <button type="button" id="f-open">เปิด…</button>
+      <input type="file" id="f-input" accept=".docx,.html,.htm,.txt,.md,.markdown" hidden>
+      <button type="button" id="f-docx">บันทึก .docx</button>
+      <button type="button" id="f-pdf">PDF / พิมพ์</button>
+      <label class="vh" for="f-export">บันทึกเป็นแบบอื่น</label>
+      <select id="f-export" title="บันทึกเป็นแบบอื่น">
+        <option value="">บันทึกเป็น…</option>
+        <option value="html">หน้าเว็บ (.html)</option>
+        <option value="md">Markdown (.md)</option>
+        <option value="txt">ข้อความล้วน (.txt)</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="tools" role="toolbar" aria-label="จัดรูปแบบ" id="tools">
+    <button type="button" data-cmd="undo" title="ย้อนกลับ (Ctrl+Z)" aria-label="ย้อนกลับ">↶</button>
+    <button type="button" data-cmd="redo" title="ทำซ้ำ (Ctrl+Y)" aria-label="ทำซ้ำ">↷</button>
+    <span class="sep"></span>
+    <select id="t-block" aria-label="ชนิดย่อหน้า" title="ชนิดย่อหน้า">
+      <option value="p">ข้อความปกติ</option>
+      <option value="h1">หัวเรื่อง 1</option>
+      <option value="h2">หัวเรื่อง 2</option>
+      <option value="h3">หัวเรื่อง 3</option>
+      <option value="blockquote">คำพูดอ้างอิง</option>
+    </select>
+    <select id="t-font" aria-label="แบบอักษร" title="แบบอักษร">
+      <option value="Sarabun">Sarabun</option>
+      <option value="Noto Sans Thai">Noto Sans Thai</option>
+      <option value="Noto Serif Thai">Noto Serif Thai</option>
+      <option value="Mitr">Mitr</option>
+      <option value="TH Sarabun New">TH Sarabun New (ถ้ามีในเครื่อง)</option>
+      <option value="Tahoma">Tahoma</option>
+      <option value="Arial">Arial</option>
+      <option value="Times New Roman">Times New Roman</option>
+      <option value="Courier New">Courier New</option>
+    </select>
+    <select id="t-size" aria-label="ขนาดตัวอักษร" title="ขนาดตัวอักษร (pt)">
+      <option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>14</option>
+      <option>16</option><option>18</option><option>20</option><option>24</option><option>28</option><option>32</option>
+      <option>36</option><option>48</option><option>60</option><option>72</option>
+    </select>
+    <span class="sep"></span>
+    <button type="button" data-cmd="bold" title="ตัวหนา (Ctrl+B)" aria-label="ตัวหนา"><b>B</b></button>
+    <button type="button" data-cmd="italic" title="ตัวเอียง (Ctrl+I)" aria-label="ตัวเอียง"><i>I</i></button>
+    <button type="button" data-cmd="underline" title="ขีดเส้นใต้ (Ctrl+U)" aria-label="ขีดเส้นใต้"><u>U</u></button>
+    <button type="button" data-cmd="strikeThrough" title="ขีดฆ่า" aria-label="ขีดฆ่า"><s>S</s></button>
+    <button type="button" data-cmd="superscript" title="ตัวยก" aria-label="ตัวยก">x²</button>
+    <button type="button" data-cmd="subscript" title="ตัวห้อย" aria-label="ตัวห้อย">x₂</button>
+    <label class="colorpick" title="สีตัวอักษร"><span aria-hidden="true">ก</span><input type="color" id="t-color" value="#b3261e" aria-label="สีตัวอักษร"></label>
+    <label class="colorpick hl" title="สีไฮไลต์"><span aria-hidden="true">ไฮ</span><input type="color" id="t-hl" value="#fff176" aria-label="สีไฮไลต์"></label>
+    <span class="sep"></span>
+    <button type="button" data-cmd="justifyLeft" title="ชิดซ้าย" aria-label="ชิดซ้าย">⫷</button>
+    <button type="button" data-cmd="justifyCenter" title="กึ่งกลาง" aria-label="กึ่งกลาง">≡</button>
+    <button type="button" data-cmd="justifyRight" title="ชิดขวา" aria-label="ชิดขวา">⫸</button>
+    <button type="button" data-cmd="justifyFull" title="เต็มแนว" aria-label="จัดเต็มแนว">☰</button>
+    <select id="t-line" aria-label="ระยะบรรทัด" title="ระยะบรรทัด">
+      <option value="">ระยะบรรทัด</option>
+      <option value="1">1.0</option><option value="1.15">1.15</option><option value="1.5">1.5</option><option value="2">2.0</option>
+    </select>
+    <span class="sep"></span>
+    <button type="button" data-cmd="insertUnorderedList" title="หัวข้อย่อย" aria-label="รายการหัวข้อย่อย">•≡</button>
+    <button type="button" data-cmd="insertOrderedList" title="ลำดับเลข" aria-label="รายการลำดับเลข">1.≡</button>
+    <button type="button" data-cmd="outdent" title="เยื้องออก (Shift+Tab)" aria-label="เยื้องออก">⇤</button>
+    <button type="button" data-cmd="indent" title="เยื้องเข้า (Tab)" aria-label="เยื้องเข้า">⇥</button>
+    <span class="sep"></span>
+    <button type="button" id="i-table" title="แทรกตาราง">ตาราง</button>
+    <button type="button" id="i-image" title="แทรกรูปภาพ">รูป</button>
+    <input type="file" id="i-image-input" accept="image/*" hidden>
+    <button type="button" id="i-link" title="แทรกลิงก์ (Ctrl+K)">ลิงก์</button>
+    <button type="button" id="i-hr" title="เส้นคั่น" aria-label="แทรกเส้นคั่น">―</button>
+    <button type="button" id="i-break" title="ตัวแบ่งหน้า (Ctrl+Enter)">แบ่งหน้า</button>
+    <button type="button" id="i-date" title="แทรกวันที่วันนี้">วันที่</button>
+    <span class="sep"></span>
+    <button type="button" data-cmd="removeFormat" title="ล้างรูปแบบ" aria-label="ล้างรูปแบบ">⌫ รูปแบบ</button>
+    <button type="button" id="t-find" title="ค้นหาและแทนที่ (Ctrl+H)">ค้นหา</button>
+  </div>
+
+  <div class="ctxbar" id="tablebar" hidden>
+    <span class="note">ตาราง:</span>
+    <button type="button" data-tbl="rowAbove">+ แถวบน</button>
+    <button type="button" data-tbl="rowBelow">+ แถวล่าง</button>
+    <button type="button" data-tbl="colLeft">+ คอลัมน์ซ้าย</button>
+    <button type="button" data-tbl="colRight">+ คอลัมน์ขวา</button>
+    <button type="button" data-tbl="delRow">ลบแถว</button>
+    <button type="button" data-tbl="delCol">ลบคอลัมน์</button>
+    <button type="button" data-tbl="delTable">ลบตาราง</button>
+  </div>
+  <div class="ctxbar" id="imagebar" hidden>
+    <label for="img-w">ความกว้างรูป</label>
+    <input type="range" id="img-w" min="10" max="100" step="5" value="60">
+    <output id="img-w-out">60%</output>
+    <button type="button" data-imgal="left">ชิดซ้าย</button>
+    <button type="button" data-imgal="center">กึ่งกลาง</button>
+    <button type="button" data-imgal="right">ชิดขวา</button>
+    <button type="button" id="img-del">ลบรูป</button>
+  </div>
+  <div class="ctxbar" id="findbar" hidden>
+    <label for="find-q">ค้นหา</label><input id="find-q" autocomplete="off">
+    <label for="find-r">แทนที่ด้วย</label><input id="find-r" autocomplete="off">
+    <label class="chk"><input type="checkbox" id="find-case"> ตรงตัวพิมพ์</label>
+    <button type="button" id="find-next">ถัดไป</button>
+    <button type="button" id="find-rep">แทนที่</button>
+    <button type="button" id="find-all">แทนที่ทั้งหมด</button>
+    <button type="button" id="find-close" aria-label="ปิดแถบค้นหา">✕</button>
+    <span class="note" id="find-msg" aria-live="polite"></span>
+  </div>
+
+  <main class="desk" id="desk">
+    <div class="page" id="page">
+      <div id="doc" class="doc" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="เนื้อหาเอกสาร"></div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <span id="st-pages">หน้า 1</span>
+    <span id="st-words">0 คำ</span>
+    <span id="st-chars">0 ตัวอักษร</span>
+    <span class="grow"></span>
+    <span id="st-save" class="note"></span>
+    <label for="zoom" class="vh">ซูม</label>
+    <select id="zoom" title="ซูม"><option value="0.75">75%</option><option value="1" selected>100%</option><option value="1.25">125%</option><option value="1.5">150%</option></select>
+  </footer>
+  <div id="msg" class="msg" role="status"></div>
+</div>
+<script src="editor.js"></script>
+<script src="convert.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
